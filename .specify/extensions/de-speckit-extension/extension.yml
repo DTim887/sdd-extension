@@ -1,0 +1,145 @@
+schema_version: "1.0"
+
+extension:
+  id: de-speckit-extension
+  name: "DE Speckit Extension"
+  version: "0.7.4"
+  description: "DE 的组织级 Spec Kit 扩展"
+  author: "Tim Jin"
+  license: MIT
+  repository: "https://github.com/DTim887/de-speckit-extension"
+  homepage: "https://github.com/DTim887/de-speckit-extension"
+
+requires:
+  speckit_version: ">=0.2.0"
+  tools: []
+
+provides:
+  commands:
+    - name: speckit.de-speckit-extension.read-jira-ticket
+      file: commands/speckit.de-speckit-extension.read-jira-ticket.md
+      description: "读取一个 JIRA ticket（SHDRP-<number>）的 description，交给下一步作为输入；可挂载在 spec-kit 任意 before_*/after_* 生命周期事件上"
+
+    - name: speckit.de-speckit-extension.figma-implement-design
+      file: commands/speckit.de-speckit-extension.figma-implement-design.md
+      description: "通过 Figma MCP 服务器，把 Figma 设计稿转换成与设计 1:1 还原的可用代码"
+
+    - name: speckit.de-speckit-extension.generate-manual-tests
+      file: commands/speckit.de-speckit-extension.generate-manual-tests.md
+      description: "分析当前 feature 已完成的实现代码，生成一份可供人工执行的手动测试用例清单，落地到 specs/<slug>/manual-test-cases.md；忽略任何输入参数，恒定只处理 .specify/feature.json 记录的当前 feature"
+
+    - name: speckit.de-speckit-extension.requirement-self-check
+      file: commands/speckit.de-speckit-extension.requirement-self-check.md
+      description: "对一个 JIRA ticket 做需求质量自检：基于 5W2H 用封闭式选择题追问，直到信息足够或用户主动结束，然后把澄清结果追加写回 ticket description"
+
+  config:
+    - name: "de-speckit-extension-config.yml"
+      template: "config-template.yml"
+      description: "这个扩展各 hook 的项目级配置"
+      required: false
+
+# 全部 18 个生命周期事件（9 个核心阶段各自的 before_*/after_*）都共用
+# 同一个 speckit.de-speckit-extension.read-jira-ticket 命令。每个事件都是
+# optional: true（默认）——核心引擎每次触发都会先给用户一条 prompt，问要不要
+# 执行这个 JIRA 检查，用户同意后 agent 才会调用；是否真正生效（找不到 ticket
+# 要不要阻断）则由项目自己的
+# .specify/extensions/de-speckit-extension/de-speckit-extension-config.yml
+# 里 jira_gate.<event>.enabled 单独控制，见 config-template.yml。命令文件里
+# 详细说明了具体行为。
+hooks:
+  before_constitution:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 constitution 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_constitution:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 constitution 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_specify:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: false
+    prompt: "读取 JIRA 门禁检查 specify 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_specify:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 specify 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_clarify:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 clarify 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_clarify:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 clarify 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_plan:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 plan 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_plan:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 plan 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_tasks:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 tasks 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_tasks:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 tasks 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_implement:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 implement 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_implement:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 implement 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_checklist:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 checklist 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_checklist:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 checklist 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_analyze:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 analyze 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_analyze:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 analyze 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  before_taskstoissues:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 taskstoissues 生成前"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+  after_taskstoissues:
+    command: speckit.de-speckit-extension.read-jira-ticket
+    optional: true
+    prompt: "读取 JIRA 门禁检查 taskstoissues 生成后"
+    description: "JIRA 门禁：读取 ticket 并交给下一步"
+
+tags:
+  - "custom"
+
+defaults:
+  enabled: true

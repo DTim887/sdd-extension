@@ -1,0 +1,57 @@
+# de-speckit-extension 配置
+# 安装时会被复制为 .specify/extensions/de-speckit-extension/de-speckit-extension-config.yml
+
+# JIRA 门禁（speckit.de-speckit-extension.read-jira-ticket）在各生命周期
+# 事件上是否生效。"default" 适用于下面没有单独列出的事件。
+#
+# 这个开关只决定"命令一旦被执行，要不要真的干活"；命令会不会被执行，
+# 由 extension.yml 里每个 hook 的 optional: true 决定 —— 核心引擎每次
+# 触发事件都会先问用户要不要运行这个 JIRA 检查，用户同意后才会走到这里。
+#
+# enabled: true  —— 门禁生效：在相关输入里找 ticket；找到了就拉取
+#   description 交给下一步；找不到就阻断（before_X 阻断 X 本身，
+#   after_X 阻断"下一步"）。
+# enabled: false —— 门禁完全不生效：直接放行，压根不去找 ticket，哪怕
+#   输入里恰好有一个合法的 ticket key 也不处理。
+#
+# 一旦按 enabled: true 找到了 ticket，它本身校验失败（不存在、认证失败、
+# description 为空等）就一律硬阻断，不再看这个开关。
+jira_gate:
+  default: true
+
+  before_constitution:
+    enabled: true
+  after_constitution:
+    enabled: true
+  before_specify:
+    enabled: true
+  after_specify:
+    enabled: true
+  before_clarify:
+    enabled: true
+  after_clarify:
+    enabled: true
+  before_plan:
+    enabled: true
+  after_plan:
+    enabled: true
+  before_tasks:
+    enabled: true
+  after_tasks:
+    enabled: true
+  before_implement:
+    enabled: true
+  after_implement:
+    enabled: true
+  before_checklist:
+    enabled: true
+  after_checklist:
+    enabled: true
+  before_analyze:
+    enabled: true
+  after_analyze:
+    enabled: true
+  before_taskstoissues:
+    enabled: true
+  after_taskstoissues:
+    enabled: true
